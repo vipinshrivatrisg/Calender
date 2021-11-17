@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="edtech.teamlease.calender.viewmodels.ViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="8dp"
+        tools:context=".ui.EventActivity">
+
+        <Button
+            android:id="@+id/btn_singleEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{viewmodel.OnaddSingleEvent}"
+            android:text="Add Single Event" />
+
+        <Button
+            android:id="@+id/btn_multiEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{viewmodel.OnaddMultiEvent}"
+            android:text="Add Multiple Event" />
+
+
+    </LinearLayout>
+</layout>
