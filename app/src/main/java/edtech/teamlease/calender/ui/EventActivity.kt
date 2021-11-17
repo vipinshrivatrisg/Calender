@@ -22,6 +22,10 @@ import edtech.teamlease.calender.databinding.ActivityEventBinding
 import edtech.teamlease.calender.viewmodels.ViewModel
 import edtech.teamlease.trainingportal.util.myToast
 
+/**
+ * Created by Vipin Shrivatri on 16-11-2021.
+ */
+
 
 class EventActivity : AppCompatActivity(), ViewModel.ViewListener {
 
