@@ -3,12 +3,16 @@ package edtech.teamlease.calender.ui
 
 import android.Manifest.permission.READ_CALENDAR
 import android.Manifest.permission.WRITE_CALENDAR
+import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,6 +25,12 @@ import edtech.teamlease.calender.R
 import edtech.teamlease.calender.databinding.ActivityEventBinding
 import edtech.teamlease.calender.viewmodels.ViewModel
 import edtech.teamlease.trainingportal.util.myToast
+import android.view.View
+import android.content.ContentUris
+import android.content.ContentValues.TAG
+import android.util.Log
+import kotlin.properties.Delegates
+
 
 /**
  * Created by Vipin Shrivatri on 16-11-2021.
@@ -29,8 +39,8 @@ import edtech.teamlease.trainingportal.util.myToast
 
 class EventActivity : AppCompatActivity(), ViewModel.ViewListener {
 
-    val callbackId = 42
-
+    private val callbackId = 42
+    var eventID by Delegates.notNull<Long>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +52,9 @@ class EventActivity : AppCompatActivity(), ViewModel.ViewListener {
         viewModel.viewListener = this
 
         checkPermission(callbackId, READ_CALENDAR, WRITE_CALENDAR)
+//        readEvents()
 
+        specificEvent()
     }
 
     private fun checkPermission(callbackId: Int, vararg permissionsId: String) {
@@ -69,7 +81,7 @@ class EventActivity : AppCompatActivity(), ViewModel.ViewListener {
         var startDate: Date? = null
 
         try {
-            startDate = simpleDateFormat.parse("20-11-2021 11:15:00")
+            startDate = simpleDateFormat.parse("30-11-2021 11:15:00")
             assert(startDate != null)
             startMillis = startDate.time
         } catch (e: ParseException) {
@@ -97,8 +109,7 @@ class EventActivity : AppCompatActivity(), ViewModel.ViewListener {
 
         val eventUri: Uri = context.getApplicationContext().getContentResolver()
             .insert(Uri.parse(eventUriString), values)!!
-        val eventID = uri?.lastPathSegment!!.toLong()
-
+        eventID = uri?.lastPathSegment!!.toLong()
 
         if (needReminder) {
             /***************** Event: Reminder(with alert) Adding reminder to event  */
@@ -119,16 +130,16 @@ class EventActivity : AppCompatActivity(), ViewModel.ViewListener {
         if (needMailService) {
             val attendeuesesUriString = "content://com.android.calendar/attendees"
 
-            //Guest 1
-            val attendeesValues = ContentValues()
-            attendeesValues.put("event_id", eventID)
-            attendeesValues.put("attendeeName", "Sachin Yadav") // Attendees name
-            attendeesValues.put("attendeeEmail", "sachin.yadav@teamlease.com") // Attendee
-            attendeesValues.put("attendeeRelationship", 0) // Relationship_Attendee(1),
-            attendeesValues.put("attendeeType", 0) // None(0), Optional(1),
-            attendeesValues.put("attendeeStatus", 0) // NOne(0), Accepted(1),
-            val attendeuesesUri1: Uri = this.getApplicationContext().getContentResolver()
-                .insert(Uri.parse(attendeuesesUriString), attendeesValues)!!
+//            //Guest 1
+//            val attendeesValues = ContentValues()
+//            attendeesValues.put("event_id", eventID)
+//            attendeesValues.put("attendeeName", "Sachin Yadav") // Attendees name
+//            attendeesValues.put("attendeeEmail", "sachin.yadav@teamlease.com") // Attendee
+//            attendeesValues.put("attendeeRelationship", 0) // Relationship_Attendee(1),
+//            attendeesValues.put("attendeeType", 0) // None(0), Optional(1),
+//            attendeesValues.put("attendeeStatus", 0) // NOne(0), Accepted(1),
+//            val attendeuesesUri1: Uri = this.getApplicationContext().getContentResolver()
+//                .insert(Uri.parse(attendeuesesUriString), attendeesValues)!!
 
             //Guest 2
             val attendeesValues2 = ContentValues()
@@ -203,6 +214,95 @@ class EventActivity : AppCompatActivity(), ViewModel.ViewListener {
         }
         myToast("Multiple Event Sent")
 
+    }
+
+    override fun OndeleteEvent() {
+        deleteEvent()
+    }
+
+//    private fun readEvents() {
+////        val desc :TextView=findViewById(R.id.desc);
+////        desc.setText(Utlity.readCalendarEvent(applicationContext).toString())
+//        val cursor: Cursor = this.getContentResolver().query(
+//            Uri.parse("content://com.android.calendar/events"),
+//            arrayOf("calendar_id", "title", "description", "dtstart", "dtend", "eventLocation"),
+//            null,
+//            null,
+//            null
+//        )!!
+//        //Cursor cursor = cr.query(Uri.parse("content://calendar/calendars"), new String[]{ "_id", "name" }, null, null, null);
+//        //Cursor cursor = cr.query(Uri.parse("content://calendar/calendars"), new String[]{ "_id", "name" }, null, null, null);
+//        var add: String? = null
+//        cursor.moveToFirst()
+//        val CalNames = arrayOfNulls<String>(cursor.getCount())
+//        val CalIds = IntArray(cursor.getCount())
+//        for (i in CalNames.indices) {
+//            CalIds[i] = cursor.getInt(0)
+//            CalNames[i] = """ Event${cursor.getInt(0)}:
+//                 Title: ${cursor.getString(1)}
+//            Description: ${cursor.getString(2)}
+//            Start Date: ${Date(cursor.getLong(3))}
+//            End Date : ${Date(cursor.getLong(4))}
+//            Location : ${cursor.getString(5)}
+//            """.trimIndent()
+//            if (add == null) add = CalNames[i] else {
+//                add += CalNames[i]
+//            }
+//            (findViewById<View>(R.id.desc) as TextView).text = add
+//            cursor.moveToNext()
+//        }
+//        cursor.close()
+//    }
+
+    private fun specificEvent() {
+        val projection = arrayOf(
+            CalendarContract.Events.CALENDAR_ID,
+            CalendarContract.Events.TITLE,
+            CalendarContract.Events.DESCRIPTION,
+            CalendarContract.Events.DTSTART,
+            CalendarContract.Events.DTEND,
+            CalendarContract.Events.ALL_DAY,
+            CalendarContract.Events.EVENT_LOCATION
+        )
+
+        val startTime = Calendar.getInstance()
+
+        startTime[Calendar.HOUR_OF_DAY] = 0
+        startTime[Calendar.MINUTE] = 0
+        startTime[Calendar.SECOND] = 0
+
+        val endTime = Calendar.getInstance()
+        endTime.add(Calendar.DATE, 1)
+
+        val selection =
+            "(( " + CalendarContract.Events.DTSTART + " >= " + startTime.timeInMillis + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.timeInMillis + " ) AND ( deleted != 1 ))"
+        val cursor: Cursor = this.getContentResolver()
+            .query(CalendarContract.Events.CONTENT_URI, projection, selection, null, null)!!
+
+        val events: MutableList<String> = ArrayList()
+        if (cursor.count > 0 && cursor.moveToFirst()) {
+            do {
+                events.add(cursor.getString(1))
+                myToast(events.toString())
+                val txt = findViewById<View>(R.id.desc) as TextView
+                txt.setText(events.toString())
+
+            } while (cursor.moveToNext())
+        }
+    }
+
+
+    private fun deleteEvent() {
+
+        var iNumRowsDeleted = 0
+        val eventsUri = Uri.parse("content://com.android.calendar/events")
+        val cur = contentResolver.query(eventsUri, null, null, null, null)
+
+        while (cur!!.moveToNext()) {
+            val eventUri = ContentUris.withAppendedId(eventsUri, eventID)
+            iNumRowsDeleted = contentResolver.delete(eventUri, null, null)
+            Log.i("TAG", "Deleted " + iNumRowsDeleted + " calendar entry.")
+        }
     }
 
 }

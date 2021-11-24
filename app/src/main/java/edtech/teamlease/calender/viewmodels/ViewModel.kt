@@ -23,12 +23,16 @@ class ViewModel : ViewModel() {
     fun OnaddMultiEvent(view: View) {
         viewListener?.OnaddMultiEvent()
     }
+    fun OndeleteEvent(view: View) {
+        viewListener?.OndeleteEvent()
+    }
 
     interface ViewListener {
 
         // this method is use for when login operation started
         fun OnaddSingleEvent()
         fun OnaddMultiEvent()
+        fun OndeleteEvent()
 
 
     }

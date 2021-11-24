@@ -10,28 +10,53 @@
 
     </data>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:padding="8dp"
-        tools:context=".ui.EventActivity">
+        android:fillViewport="true">
 
-        <Button
-            android:id="@+id/btn_singleEvent"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{viewmodel.OnaddSingleEvent}"
-            android:text="Add Single Event" />
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            tools:context=".ui.EventActivity">
 
-        <Button
-            android:id="@+id/btn_multiEvent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="@{viewmodel.OnaddMultiEvent}"
-            android:text="Add Multiple Event" />
+            <TextView
+                android:id="@+id/desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/btn_singleEvent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{viewmodel.OnaddSingleEvent}"
+                    android:text="Add 1 Event" />
+
+                <Button
+                    android:id="@+id/btn_multiEvent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:onClick="@{viewmodel.OnaddMultiEvent}"
+                    android:text="Add Multiple Event" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_deleteEvent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:onClick="@{viewmodel.OndeleteEvent}"
+                android:text="Delete Event" />
+        </LinearLayout>
+    </ScrollView>
 </layout>
